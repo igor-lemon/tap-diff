@@ -41,8 +41,11 @@ var FIG_TICK = _figures2['default'].tick;
 var FIG_CROSS = _figures2['default'].cross;
 
 var createReporter = function createReporter() {
+  var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+  var callback = arguments.length <= 1 || arguments[1] === undefined ? function () {} : arguments[1];
+
   var output = (0, _through22['default'])();
-  var p = (0, _tapParser2['default'])();
+  var p = new _tapParser2['default'](options, callback);
   var stream = (0, _duplexer2['default'])(p, output);
   var startedAt = Date.now();
 
@@ -108,6 +111,8 @@ var createReporter = function createReporter() {
       });
     };
 
+    var shouldExit = !!options.bail;
+
     var _assert$diag = assert.diag;
     var at = _assert$diag.at;
     var actual = _assert$diag.actual;
@@ -153,6 +158,11 @@ var createReporter = function createReporter() {
       println(compared, 4);
     } else {
       println(_chalk2['default'].red.inverse(actual) + _chalk2['default'].green.inverse(expected), 4);
+    }
+
+    if (shouldExit) {
+      assert.end();
+      process.exit(0);
     }
   };
 
